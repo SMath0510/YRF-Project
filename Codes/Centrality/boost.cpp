@@ -2,8 +2,8 @@
 #include <vector>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/degree_centrality.hpp>
-#include <boost/graph/closeness_centrality.hpp>
-#include <boost/graph/betweenness_centrality.hpp>
+// #include <boost/graph/closeness_centrality.hpp>
+// #include <boost/graph/betweenness_centrality.hpp>
 
 using namespace std;
 
@@ -26,19 +26,19 @@ int main() {
     boost::degree_centrality(g, boost::make_iterator_property_map(degree_centrality.begin(), boost::get(boost::vertex_index, g), degree_centrality[0]));
 
     // Closeness Centrality
-    vector<double> closeness_centrality(boost::num_vertices(g));
-    boost::closeness_centrality(g, boost::make_iterator_property_map(closeness_centrality.begin(), boost::get(boost::vertex_index, g), closeness_centrality[0]));
+    // vector<double> closeness_centrality(boost::num_vertices(g));
+    // boost::closeness_centrality(g, boost::make_iterator_property_map(closeness_centrality.begin(), boost::get(boost::vertex_index, g), closeness_centrality[0]));
 
     // Betweenness Centrality
-    vector<double> betweenness_centrality(boost::num_vertices(g));
-    boost::betweenness_centrality(g, boost::make_iterator_property_map(betweenness_centrality.begin(), boost::get(boost::vertex_index, g), betweenness_centrality[0]));
+    // vector<double> betweenness_centrality(boost::num_vertices(g));
+    // boost::betweenness_centrality(g, boost::make_iterator_property_map(betweenness_centrality.begin(), boost::get(boost::vertex_index, g), betweenness_centrality[0]));
 
     // Results
     for (size_t i = 0; i < degree_centrality.size(); ++i) {
         cout << "Node " << i + 1
              << ": Degree Centrality = " << degree_centrality[i]
-             << ", Closeness Centrality = " << closeness_centrality[i]
-             << ", Betweenness Centrality = " << betweenness_centrality[i]
+            //  << ", Closeness Centrality = " << closeness_centrality[i]
+            //  << ", Betweenness Centrality = " << betweenness_centrality[i]
              << endl;
     }
 
