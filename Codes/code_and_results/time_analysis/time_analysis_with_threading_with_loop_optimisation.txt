@@ -1,0 +1,55 @@
+Version NetworkX = 3.2.1
+filenames read
+<mdtraj.Topology with 1 chains, 512 residues, 1536 atoms, 1024 bonds>
+0.8660254037844387 0.1339745962155613
+No. of frames: 1000
+Network created for frame 0
+--- 4.572126626968384 seconds ---
+after Shortest path %s path for 1st network all-pair-dijkstras
+--- 4.913659572601318 seconds ---
+after loop network for 1st network
+--- 5.061689376831055 seconds ---
+after path histogram for 1st network
+--- 5.150002956390381 seconds ---
+after centrality histogram for networks
+--- 6.325834035873413 seconds ---
+Network created for frame 1
+--- 8.995129823684692 seconds ---
+after Shortest path %s path for 1st network all-pair-dijkstras
+--- 9.3314208984375 seconds ---
+after loop network for 1st network
+--- 9.467995882034302 seconds ---
+after path histogram for 1st network
+--- 9.548574924468994 seconds ---
+after centrality histogram for networks
+--- 10.690757989883423 seconds ---
+Network created for frame 2
+--- 13.362480401992798 seconds ---
+after Shortest path %s path for 1st network all-pair-dijkstras
+--- 13.703004598617554 seconds ---
+after loop network for 1st network
+--- 13.84367060661316 seconds ---
+after path histogram for 1st network
+--- 13.928072452545166 seconds ---
+after centrality histogram for networks
+--- 15.095340967178345 seconds ---
+Network created for frame 3
+--- 17.785048484802246 seconds ---
+after Shortest path %s path for 1st network all-pair-dijkstras
+--- 18.12239933013916 seconds ---
+after loop network for 1st network
+--- 18.259514093399048 seconds ---
+after path histogram for 1st network
+--- 18.338613748550415 seconds ---
+after centrality histogram for networks
+--- 19.462592601776123 seconds ---
+Network created for frame 4
+--- 22.138794660568237 seconds ---
+after Shortest path %s path for 1st network all-pair-dijkstras
+--- 22.46993088722229 seconds ---
+after loop network for 1st network
+--- 22.610547304153442 seconds ---
+after path histogram for 1st network
+--- 22.691373586654663 seconds ---
+after centrality histogram for networks
+--- 23.89594340324402 seconds ---
