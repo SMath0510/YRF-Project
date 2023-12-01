@@ -25,13 +25,13 @@
 ## Formulas Used
 
 1. **Distance Criterion for Water–Water H-bond52:**
-   - $ \text{Distance} < 0.35 \, \text{nm} $
+   - $\text{Distance} < 0.35 \, \text{nm}$
 
 2. **Ensemble Average H-bond Number Calculation:**
-   - $ \text{Average H-bond Number} = \frac{\text{Number of H-bonds}}{\text{Number of Water Molecules}} $
+   - $\text{Average H-bond Number} = \frac{\text{Number of H-bonds}}{\text{Number of Water Molecules}}$
 
 3. **H-bond Length Calculation:**
-   - $ \text{Average H-bond Length} = \frac{\text{Total Length of H-bonds}}{\text{Number of H-bonds}} $
+   - $\text{Average H-bond Length} = \frac{\text{Total Length of H-bonds}}{\text{Number of H-bonds}}$
 
 4. **Radial Distribution Functions (RDFs):**
    - Used to determine the first minimum distance between interacting sites in osmolyte and water systems.

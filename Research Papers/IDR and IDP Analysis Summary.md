@@ -19,25 +19,25 @@ Concentration of charged groups and the RSA surface area significantly influence
   - Box: Truncated octahedral with 1.4 nm padding from proteins.
 
 - **Analysis of Water Dynamics:**
-  - Hydrogen Bond Time Correlation Function: $C(t)$ formula for hydrogen bond existence probability.
-  - Lifetime Calculation: τ obtained at $e^{-1}$ of $C(0)$ via nonlinear least-squares fitting.
+  - Hydrogen Bond Time Correlation Function:$C(t)$formula for hydrogen bond existence probability.
+  - Lifetime Calculation: τ obtained at$e^{-1}$of$C(0)$via nonlinear least-squares fitting.
   - Average Solvent-Accessible Surface Area (SASA): Computed per residue to assess water access.
-  - Retardation Factor: Ratio of $\tau$ for polar, cationic, and anionic residues to nonpolar residues.
-  - Correlation with Distance: Investigated correlation between hydrogen bond lifetime and residue distance from protein center of mass for small RSA $(<0.3)$.
+  - Retardation Factor: Ratio of$\tau$for polar, cationic, and anionic residues to nonpolar residues.
+  - Correlation with Distance: Investigated correlation between hydrogen bond lifetime and residue distance from protein center of mass for small RSA$(<0.3)$.
 
 ## Formulas and Definitions
 
 1. **Hydrogen Bond Time Correlation Function (C(t)):**
-   - $C(t) = \frac{1}{2} [1 + \text{cos}(\omega(t - t_0))] $, where $\omega = \frac{2\pi}{\tau} $.
+   -$C(t) = \frac{1}{2} [1 + \text{cos}(\omega(t - t_0))]$, where$\omega = \frac{2\pi}{\tau}$.
 
 2. **Hydrogen Bond Lifetime (τ):**
-   - $ \tau $ is the time where $ C(t) $ is $ e^{-1} $ of $ C(0) $.
+   -$\tau$is the time where$C(t)$is$e^{-1}$of$C(0)$.
 
 3. **Average Solvent-Accessible Surface Area (SASA):**
-   - $ \text{RSA}_i = \frac{\text{SASA}_i}{\text{SASA}_{i,\text{max}}} $, where $ \text{SASA}_i $ is the solvent-accessible surface area for residue $ i $ and $ \text{SASA}_{i,\text{max}} $ is the maximum accessible surface area for residue $ i $.
+   -$\text{RSA}_i = \frac{\text{SASA}_i}{\text{SASA}_{i,\text{max}}}$, where$\text{SASA}_i$is the solvent-accessible surface area for residue$i$and$\text{SASA}_{i,\text{max}}$is the maximum accessible surface area for residue$i$.
 
 4. **Retardation Factor:**
-   - $ \text{Retardation Factor} = \frac{\tau_{\text{polar}}}{\tau_{\text{nonpolar}}} $, $ \frac{\tau_{\text{cationic}}}{\tau_{\text{nonpolar}}} $, or $ \frac{\tau_{\text{anionic}}}{\tau_{\text{nonpolar}}} $ for polar, cationic, and anionic residues, respectively.
+   -$\text{Retardation Factor} = \frac{\tau_{\text{polar}}}{\tau_{\text{nonpolar}}}$,$\frac{\tau_{\text{cationic}}}{\tau_{\text{nonpolar}}}$, or$\frac{\tau_{\text{anionic}}}{\tau_{\text{nonpolar}}}$for polar, cationic, and anionic residues, respectively.
 
 5. **Correlation with Distance:**
    - Correlation between hydrogen bond lifetime and residue distance from the center of mass of the protein for small RSA ($< 0.3$).

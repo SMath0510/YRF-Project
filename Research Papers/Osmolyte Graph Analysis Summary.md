@@ -37,63 +37,63 @@ We calculate the following centrality metrics for the graphs:
 ### Coordination Number and Preferential Contact Ratio Calculation:
 
 #### Coordination Number ($n_i$):
-$ n_i = 4 \pi \rho_i,b \int_{r=0}^{R} g_{wi}(r) r^2 \, dr $
+$n_i = 4 \pi \rho_i,b \int_{r=0}^{R} g_{wi}(r) r^2 \, dr$
 
-- $i$ corresponds to either water ($wat$) or osmolyte ($osm$),
-- $R$ is the cutoff distance of 0.35 nm.
+-$i$corresponds to either water ($wat$) or osmolyte ($osm$),
+-$R$is the cutoff distance of 0.35 nm.
 
 #### Bulk Density (ρ):
-$ \rho = \frac{N}{V} $
+$\rho = \frac{N}{V}$
 
-- $N$ is the total number of molecules,
-- $V$ is the simulation box volume.
+-$N$is the total number of molecules,
+-$V$is the simulation box volume.
 
 #### Preferential Contact Ratio ($γ$):
-$ γ = \frac{n_{osm}}{n_{wat}} \frac{N_{wat} - 1}{N_{osm} - Nh} $
+$γ = \frac{n_{osm}}{n_{wat}} \frac{N_{wat} - 1}{N_{osm} - Nh}$
 
-- $N_h$ is the number of heavy atoms per osmolyte.
+-$N_h$is the number of heavy atoms per osmolyte.
 
 ### Interaction Energy Calculation:
 
-$ Interaction \ Energy = Dispersion \ Interaction + Electrostatic \ Interaction $
+$Interaction \ Energy = Dispersion \ Interaction + Electrostatic \ Interaction$
 
 ### Tetrahedral Order Parameter (q4,i):
 
-$ q_{4,i} = \frac{1}{8} \sum_{j,k} \cos^2 \theta_{jik} $
+$q_{4,i} = \frac{1}{8} \sum_{j,k} \cos^2 \theta_{jik}$
 
 ### Hydrogen Bond Strength Calculation:
 
-$ w = \cos^2 \theta \left(1 - \frac{r - r_{min}}{r_{max} - r_{min}}\right) $
+$w = \cos^2 \theta \left(1 - \frac{r - r_{min}}{r_{max} - r_{min}}\right)$
 
-- $r$ is the distance between donor and acceptor atoms,
-- $θ$ is the angle between the hydrogen atom, the donor, and the acceptor.
+-$r$is the distance between donor and acceptor atoms,
+-$θ$is the angle between the hydrogen atom, the donor, and the acceptor.
 
 ### Graph Network Analyses:
 
 #### Closeness Centrality ($Cc$):
 
-$ Cc(u) = \frac{n}{N(N-1)} \sum_{v} \frac{1}{d(u,v)} $
+$Cc(u) = \frac{n}{N(N-1)} \sum_{v} \frac{1}{d(u,v)}$
 
-- $n$ is the number of reachable nodes to the node $u$,
-- $d(u,v)$ is the shortest distance between the node $u$ and a reachable node $v$.
+-$n$is the number of reachable nodes to the node$u$,
+-$d(u,v)$is the shortest distance between the node$u$and a reachable node$v$.
 
 #### Betweenness Centrality ($Cb$):
 
-$ Cb(u) = \frac{\sum_{s,t} np(s,t|u)}{(N-1)(N-2)} $
+$Cb(u) = \frac{\sum_{s,t} np(s,t|u)}{(N-1)(N-2)}$
 
-- $n_p(s,t)$ is the number of shortest paths between nodes $s$ and $t$,
-- $n_p(s,t|u)$ is the number of such paths that pass through the node $u$.
+-$n_p(s,t)$is the number of shortest paths between nodes$s$and$t$,
+-$n_p(s,t|u)$is the number of such paths that pass through the node$u$.
 
 ### Network Properties Comparison:
 
 #### Relative Mean Path Length ($Δp$):
-$ Δp = \langle p_{soln} \rangle - \langle p_{NW} \rangle $
+$Δp = \langle p_{soln} \rangle - \langle p_{NW} \rangle$
 
 #### Effective Betweenness/Closeness Centrality ($η$):
-$ η = \frac{\langle Cb_{osm} \rangle}{\langle Cb_{wat} \rangle} $
+$η = \frac{\langle Cb_{osm} \rangle}{\langle Cb_{wat} \rangle}$
 
 #### Effective Closeness ($ξ$):
-$ ξ = \frac{\langle Cc_{wat} \rangle - \langle C̃c_{wat} \rangle}{\langle Cc_{wat} \rangle} $
+$ξ = \frac{\langle Cc_{wat} \rangle - \langle C̃c_{wat} \rangle}{\langle Cc_{wat} \rangle}$
 
 ## Conclusions
 
