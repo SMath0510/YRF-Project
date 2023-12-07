@@ -19,7 +19,7 @@ Concentration of charged groups and the RSA surface area significantly influence
   - Box: Truncated octahedral with 1.4 nm padding from proteins.
 
 - **Analysis of Water Dynamics:**
-  - Hydrogen Bond Time Correlation Function:$C(t)$formula for hydrogen bond existence probability.
+  - Hydrogen Bond Time Correlation Function: $C(t)$ formula for hydrogen bond existence probability.
   - Lifetime Calculation: τ obtained at$e^{-1}$of$C(0)$via nonlinear least-squares fitting.
   - Average Solvent-Accessible Surface Area (SASA): Computed per residue to assess water access.
   - Retardation Factor: Ratio of$\tau$for polar, cationic, and anionic residues to nonpolar residues.
