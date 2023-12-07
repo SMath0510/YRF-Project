@@ -20,7 +20,11 @@ Concentration of charged groups and the RSA surface area significantly influence
 
 - **Analysis of Water Dynamics:**
   - Hydrogen Bond Time Correlation Function: $C(t)$ formula for hydrogen bond existence probability.
+<<<<<<< HEAD
   - Lifetime Calculation: τ obtained at $e^{-1}$ of $C(0)$ via nonlinear least-squares fitting.
+=======
+  - Lifetime Calculation: τ obtained at$e^{-1}$of$C(0)$via nonlinear least-squares fitting.
+>>>>>>> 5763961c00b85917e44922be301bed34aec30ce3
   - Average Solvent-Accessible Surface Area (SASA): Computed per residue to assess water access.
   - Retardation Factor: Ratio of $\tau$ for polar, cationic, and anionic residues to nonpolar residues.
   - Correlation with Distance: Investigated correlation between hydrogen bond lifetime and residue distance from protein center of mass for small RSA $(<0.3)$ .
