@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import concurrent.futures ## For implementing parallelization in centrality
 from scipy.spatial import cKDTree ## Using kdtree data structure for optimisation
 from concurrent.futures import ProcessPoolExecutor
+import copy
 
 print("Version NetworkX = " + nx.__version__)
 
@@ -21,7 +22,7 @@ groname = 'water_traj/bulk_tip3p_all.gro'
 approximate = False
 threading = False
 multiprocessing = True
-community_analysis = False
+community_analysis = True
 optimize_loops = True
 test = False
 stop = False
@@ -51,6 +52,7 @@ file3name=head + 'hbweight_histogram_'+extnname
 file5name=head + 'Pathlength_histogram_'+extnname
 file6name=head + 'PerFrame_HistCount_'+extnname
 file7name=head + 'Centrality_histogram_'+extnname
+file9name = head + "Average Bond Strength.csv"
 #
 traj = md.load(xtcname,top=groname)   
 info = traj.xyz.shape
@@ -163,6 +165,8 @@ file7 = open(file7name, "w")
 file7.write("#Frame \t WatClCen \t WatBtCen\n")
 if test: 
     file8 = open("test_shaun.txt", "w")
+file9 = open(file9name, "w")
+file9.write(f'Key, Avg. Strength\n')
 hbnet = nx.MultiDiGraph()
 watnet = nx.MultiDiGraph() 
 wmin = 0.4 # 0.14/0.35 as 3.5 A is the h-bond cut-off distance
@@ -182,10 +186,46 @@ mcen = 100
 cen_hist = np.zeros((mcen,2),int)
 btbin_width = 0.005
 clbin_width = 0.01
-kd_tree_threshold = 1
+kd_tree_threshold = 0.4
+
+old_hbond_list = []
+latest_hbond_list = []
+average_hbond_life_mapping = {}
 
 
+def update_mapping(frame_no, num_nodes, max_frames = 2):
+    print(f'Updating Mapping: {frame_no+1}/{max_frames}')
+    for key in latest_hbond_list:
+        
+        if key not in average_hbond_life_mapping.keys():
+            average_hbond_life_mapping[key] = {'Start': None, 'End': None, 'Time_List': []}
+        
+        if (key not in old_hbond_list) or (average_hbond_life_mapping[key]['Start'] is None):
+            average_hbond_life_mapping[key]['Start'] = frame_no
+        
+        average_hbond_life_mapping[key]['End'] = frame_no
+        
+            
+    for key in old_hbond_list:
+        
+        if key not in average_hbond_life_mapping.keys():
+            average_hbond_life_mapping[key] = {'Start': None, 'End': None, 'Time_List': []}
+        
+        if (key not in latest_hbond_list):
+            average_hbond_life_mapping[key]['End'] = frame_no
+            average_hbond_life_mapping[key]['Time_List'].append(
+                average_hbond_life_mapping[key]['End'] - average_hbond_life_mapping[key]['Start']
+            )
 
+    if ((frame_no + 1) == max_frames):
+        for key in latest_hbond_list:
+            average_hbond_life_mapping[key]['End'] = frame_no + 1
+            average_hbond_life_mapping[key]['Time_List'].append(
+                average_hbond_life_mapping[key]['End'] - average_hbond_life_mapping[key]['Start']
+            )
+
+                
+            
 #
 
 # Defining some centrality functions (with optimisation)
@@ -209,13 +249,15 @@ def calculate_pagerank_centrality(graph):
         
 #
 print("No. of frames: %d"%(n_frame))
-for frame in range(0,min(5,n_frame)):
+
+num_iter = min(10, n_frame)
+for frame in range(0,num_iter):
     if test: 
         print(coord[frame].shape)
         print(acceptors.shape)
         print(acceptors[0])
-    if stop:
-        break
+    # if stop:
+    #     break
     if optimize_loops: 
         kdtree = cKDTree(coord[frame]) 
     count =0
@@ -267,7 +309,20 @@ for frame in range(0,min(5,n_frame)):
     #in_degree = number of h-bonds accepted by the molecule
     #out_degree = number of h-bonds donated by the molecule
     print("Network created for frame %d"%(frame))
-    print("--- %s seconds ---" % (time.time() - start_time))                              
+    print("--- %s seconds ---" % (time.time() - start_time))   
+       
+    # Store copies as deep copies
+    old_hbond_list = copy.deepcopy(latest_hbond_list)
+    latest_hbond_list = copy.deepcopy(hbnet.edges)
+    print(f'After first update, OldSize: {len(old_hbond_list)}, NewSize: {len(latest_hbond_list)}')
+    update_mapping(frame_no=frame, num_nodes=topol.n_atoms, max_frames=num_iter)
+    
+    print("after path updations")
+    print("--- %s seconds ---" % (time.time() - start_time))   
+    
+    if stop:
+        continue
+                            
     wwcount = 0
     # weight distribution
     for n, nbrsdict in hbnet.adj.items():
@@ -407,19 +462,13 @@ for frame in range(0,min(5,n_frame)):
 	#	plt.show()
 	#
     print("after centrality histogram for networks")
-    hbnet.clear()
     print("--- %s seconds ---" % (time.time() - start_time))                              
     #print count,len(nodes),minwt,maxwt,x
 
     if community_analysis:
-        # Motif Analysis
-        motif_counts = nx.algorithms.tree.motifs.tree_motif_counts(hbnet, 3)
-        print("Motif Counts:")
-        for motif, count in motif_counts.items():
-            print(f"Motif {motif}: {count}")
 
         # Community Detection
-        communities = nx.algorithms.community.greedy_modularity_communities(hbnet)
+        communities = nx.algorithms.community.greedy_modularity_communities(hbnet, cutoff=1)
 
         # Create a mapping of node to community index
         community_mapping = {node: i for i, community in enumerate(communities) for node in community}
@@ -427,20 +476,43 @@ for frame in range(0,min(5,n_frame)):
         # Add community information to nodes
         nx.set_node_attributes(hbnet, community_mapping, "community")
 
-        # Draw the graph with nodes colored by community
-        pos = nx.spring_layout(hbnet)  # You can use a different layout algorithm if needed
-        node_colors = [hbnet.nodes[node]["community"] for node in hbnet]
-        nx.draw(hbnet, pos, node_color=node_colors, cmap=plt.cm.get_cmap("viridis"), with_labels=True)
-        plt.show()
+        # Filter nodes based on degree centrality (optional)
+        # degree_threshold = 10
+        # filtered_nodes = [node for node, degree in hbnet.degree() if degree >= degree_threshold]
+        # filtered_hbnet = hbnet.subgraph(filtered_nodes)
 
+        filtered_hbnet = hbnet
+        # Draw the graph with nodes colored by community
+        plt.figure(figsize=(10, 8))
+        pos = nx.spring_layout(filtered_hbnet)  # You can use a different layout algorithm if needed
+        node_colors = [filtered_hbnet.nodes[node]["community"] for node in filtered_hbnet]
+        nx.draw(filtered_hbnet, pos, node_color=node_colors, cmap=plt.cm.get_cmap("viridis"), with_labels=True, font_size=8)
+
+        # Save the plot as an image file (adjust the filename and format as needed)
+        
+        plt.savefig(f"{head}_network_plot_frame{frame}.png")
+        # plt.show()
         # Clearing networks
-        hbnet.clear()
         print("after motif and community analysis for networks")
         print("--- %s seconds ---" % (time.time() - start_time))
+
+    hbnet.clear()
 
 #frame loop
 #Normalization could use 0,1,2,6,7,8 - #water nodes * nframes; 3,4,5 - #sugar nodes*nframes
 
+# file9.write(f'{average_hbond_life_mapping.keys()}')
+    
+for key in average_hbond_life_mapping.keys():
+    len_ = len(average_hbond_life_mapping[key]['Time_List'])
+    if(len_ == 0):
+        continue
+    # file9.write(f'Nonzero Key: {key}')
+    sum_ = sum(average_hbond_life_mapping[key]['Time_List'])
+    average = sum_ / len_
+    
+    file9.write(f'{key}, {average}\n')
+    
 for i in range (0,nhb):
 	file2.write("%d\t\t%d\t\t%d\t\t%d\n"%(i,nhb_hist[i][0],nhb_hist[i][1],nhb_hist[i][2]))
 #
@@ -471,3 +543,4 @@ file6.close()
 file7.close()
 if test: 
     file8.close()
+file9.close()

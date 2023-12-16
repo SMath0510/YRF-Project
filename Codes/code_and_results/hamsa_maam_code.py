@@ -156,7 +156,7 @@ btbin_width = 0.005
 clbin_width = 0.01
 #
 print("No. of frames: %d"%(n_frame))
-for frame in range(0,min(5, n_frame)):
+for frame in range(0,min(10, n_frame)):
 	print("Working on frame " + str(frame))
 	count = 0
 	for i in range (0,nres):
