@@ -17,14 +17,16 @@ groname = 'water_traj/bulk_tip3p_all.gro'
 print("filenames read")
 
 #output filenames
+
+head = 'hamsa_maam_outputs/'
 extnname='.dat'
-file1name='hamsa_maam_outputs/Network_Stats_'+extnname
-file2name='hamsa_maam_outputs/molhb_histogram_'+extnname
-file3name='hamsa_maam_outputs/hbweight_histogram_'+extnname
-file5name='hamsa_maam_outputs/Pathlength_histogram_'+extnname
-file6name='hamsa_maam_outputs/PerFrame_HistCount_'+extnname
-file7name='hamsa_maam_outputs/Centrality_histogram_'+extnname
-#
+file1name= head + 'Network_Stats_'+extnname
+file2name= head + 'molhb_histogram_'+extnname
+file3name= head + 'hbweight_histogram_'+extnname
+file5name= head + 'Pathlength_histogram_'+extnname
+file6name= head + 'PerFrame_HistCount_'+extnname
+file7name= head + 'Centrality_histogram_'+extnname
+file10name = head + f'Time_Analysis.csv'
 traj = md.load(xtcname,top=groname)   
 info = traj.xyz.shape
 
@@ -135,6 +137,9 @@ file6 = open(file6name, "w")
 file6.write("#Frame\t #WatHBAcc\t #WatHBDon\t #WatTotHB\t #HBPaths \t #TwoEdges \t #MultiEdges \t #HBNodesNoinpath \n")
 file7 = open(file7name, "w")
 file7.write("#Frame \t WatClCen \t WatBtCen\n")
+
+file10 = open(file10name, "w")
+file10.write(f"Graph Construction, Shortest Path, Centrality, Community\n")
 hbnet = nx.MultiDiGraph()
 watnet = nx.MultiDiGraph() 
 wmin = 0.4 # 0.14/0.35 as 3.5 A is the h-bond cut-off distance
@@ -156,7 +161,9 @@ btbin_width = 0.005
 clbin_width = 0.01
 #
 print("No. of frames: %d"%(n_frame))
-for frame in range(0,min(10, n_frame)):
+for frame in range(0,min(5, n_frame)):
+    
+	local_start_time = time.time()
 	print("Working on frame " + str(frame))
 	count = 0
 	for i in range (0,nres):
@@ -199,6 +206,10 @@ for frame in range(0,min(10, n_frame)):
 	#out_degree = number of h-bonds donated by the molecule
 	print("Network created for frame %d"%(frame))
 	print("--- %s seconds ---" % (time.time() - start_time))                              
+	
+	graph_creation_time = time.time() - local_start_time   
+                        
+ 
 	wwcount = 0
 	#weight distribution
 	for n, nbrsdict in hbnet.adj.items():
@@ -210,9 +221,12 @@ for frame in range(0,min(10, n_frame)):
 				wwcount = wwcount + 1
 				#
 	#path length properties
+	
+	local_start_time = time.time()
 	path = dict(nx.all_pairs_dijkstra_path(hbnet))
 	print("after dijkstar path for 1st network")
-	print("--- %s seconds ---" % (time.time() - start_time))                              
+	print("--- %s seconds ---" % (time.time() - start_time))  
+	shortest_path_time = time.time() - local_start_time                               
 	#
 	waccsum = 0
 	wdonsum = 0
@@ -261,8 +275,12 @@ for frame in range(0,min(10, n_frame)):
 	#Centrality Analysis
 	#clcen - closeness centrality gives the product of ratio of nodes that can reach a given node (inward paths) and the inverse of the average distance to the given node. closeness distance is based on the incoming distance 
 	#btcen - between centrality
+	
+	local_start_time = time.time()
 	clcen1 = nx.closeness_centrality(hbnet,distance="weight")
 	btcen1 = nx.betweenness_centrality(hbnet,weight="weight")
+	centrality_analysis_time = time.time() - local_start_time
+ 
 	hnodes = hbnet.nodes()
 	nrcount1 = 0
 	for nd in hnodes:
@@ -282,7 +300,13 @@ for frame in range(0,min(10, n_frame)):
 	#if(frame==0):
 	#	nx.draw(hbnet,nx.circular_layout(hbnet),nodecolor='r', edge_color='b')
 	#	plt.show()
+ 
+	local_start_time = time.time()
+	communities = nx.algorithms.community.greedy_modularity_communities(hbnet, cutoff=1)
+	community_analysis_time = time.time() - local_start_time
+ 
 	#Clearing networks
+	file10.write(f'{graph_creation_time}, {shortest_path_time}, {centrality_analysis_time}, {community_analysis_time}\n')
 	hbnet.clear()
 	file6.write("%d\t\t%d\t\t%d\t\t%d\t\t%d\t\t%d\t\t%d\t\t%d\n"%(frame,waccsum,wdonsum,whbsum,pcount,mecount,mecount2,nrcount1))
 	#
@@ -319,4 +343,5 @@ file3.close()
 file5.close()
 file6.close()
 file7.close()
+file10.close()
 print("--- %s seconds ---" % (time.time() - start_time))                              
