@@ -1,0 +1,27 @@
+Select group for output
+Selected 1: 'Water'
+importing done
+filenames read
+echo 1 | gmx trjconv -f bulk_tip3p_all_part1.xtc -s bulk_tip3p_all.gro -o frame_0.pdb -b 2000.0 -e 2001.0
+0.8660254037844387 0.1339745962155613
+Frame: 0 
+X: [16.15, 15.27, 16.01, 21.0, 21.33, 20.05, 21.11, 20.98, 21.65, 5.7]
+Y: [3.72, 3.71, 3.82, 12.6, 11.73, 12.54, 6.53, 5.8, 6.16, 17.29]
+Z: [4.16, 3.79, 5.1, 3.5, 3.29, 3.36, 6.04, 6.65, 5.34, 17.94]
+Res: ['SOL' 'SOL' 'SOL' 'SOL' 'SOL' 'SOL' 'SOL' 'SOL' 'SOL' 'SOL']
+ResNum: [1, 1, 1, 2, 2, 2, 3, 3, 3, 4]
+Chain: ['OW' 'HW1' 'HW2' 'OW' 'HW1' 'HW2' 'OW' 'HW1' 'HW2' 'OW']
+nres = 512
+natoms = 1536
+Working on frame 0
+Network created for frame 0
+--- 6.670158863067627 seconds ---
+after dijkstar path for 1st network
+--- 6.676301956176758 seconds ---
+after loop network for 1st network
+--- 6.842675447463989 seconds ---
+after path histogram for 1st network
+--- 6.843761444091797 seconds ---
+after centrality histogram for networks
+--- 6.894443511962891 seconds ---
+--- 6.895057916641235 seconds ---

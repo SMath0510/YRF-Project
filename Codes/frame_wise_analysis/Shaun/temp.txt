@@ -1,0 +1,639 @@
+info = 
+(1000, 1536, 3)
+
+coord = 
+[[[1.6150001  0.372      0.416     ]
+  [1.5270001  0.37100002 0.379     ]
+  [1.6010001  0.38200003 0.51000005]
+  ...
+  [1.399      1.582      1.463     ]
+  [1.4770001  1.626      1.4970001 ]
+  [1.327      1.6200001  1.5130001 ]]
+
+ [[1.6850001  0.30800003 0.374     ]
+  [1.613      0.298      0.31100002]
+  [1.6420001  0.33800003 0.45400003]
+  ...
+  [1.4280001  1.5920001  1.488     ]
+  [1.4920001  1.6630001  1.493     ]
+  [1.3460001  1.6300001  1.5220001 ]]
+
+ [[1.6570001  0.272      0.439     ]
+  [1.672      0.36400002 0.41700003]
+  [1.59       0.275      0.508     ]
+  ...
+  [1.3970001  1.8370001  1.381     ]
+  [1.3470001  1.7700001  1.4280001 ]
+  [1.4020001  1.9110001  1.442     ]]
+
+ ...
+
+ [[0.776      2.305      1.4580001 ]
+  [0.70400006 2.243      1.462     ]
+  [0.75100005 2.375      1.5180001 ]
+  ...
+  [0.90200007 2.204      0.39200002]
+  [0.86300004 2.265      0.32900003]
+  [0.9110001  2.1220002  0.34500003]]
+
+ [[0.72       2.2050002  1.516     ]
+  [0.771      2.1290002  1.5430001 ]
+  [0.74300003 2.273      1.5780001 ]
+  ...
+  [0.96500003 2.1790001  0.40300003]
+  [0.93900007 2.229      0.326     ]
+  [0.99100006 2.094      0.36900002]]
+
+ [[0.611      2.1680002  1.6370001 ]
+  [0.57900006 2.1390002  1.552     ]
+  [0.638      2.0870001  1.6810001 ]
+  ...
+  [0.78000003 2.22       0.37300003]
+  [0.731      2.227      0.291     ]
+  [0.85600007 2.1660001  0.351     ]]]
+
+donors = 
+[   0    3    6    9   12   15   18   21   24   27   30   33   36   39
+   42   45   48   51   54   57   60   63   66   69   72   75   78   81
+   84   87   90   93   96   99  102  105  108  111  114  117  120  123
+  126  129  132  135  138  141  144  147  150  153  156  159  162  165
+  168  171  174  177  180  183  186  189  192  195  198  201  204  207
+  210  213  216  219  222  225  228  231  234  237  240  243  246  249
+  252  255  258  261  264  267  270  273  276  279  282  285  288  291
+  294  297  300  303  306  309  312  315  318  321  324  327  330  333
+  336  339  342  345  348  351  354  357  360  363  366  369  372  375
+  378  381  384  387  390  393  396  399  402  405  408  411  414  417
+  420  423  426  429  432  435  438  441  444  447  450  453  456  459
+  462  465  468  471  474  477  480  483  486  489  492  495  498  501
+  504  507  510  513  516  519  522  525  528  531  534  537  540  543
+  546  549  552  555  558  561  564  567  570  573  576  579  582  585
+  588  591  594  597  600  603  606  609  612  615  618  621  624  627
+  630  633  636  639  642  645  648  651  654  657  660  663  666  669
+  672  675  678  681  684  687  690  693  696  699  702  705  708  711
+  714  717  720  723  726  729  732  735  738  741  744  747  750  753
+  756  759  762  765  768  771  774  777  780  783  786  789  792  795
+  798  801  804  807  810  813  816  819  822  825  828  831  834  837
+  840  843  846  849  852  855  858  861  864  867  870  873  876  879
+  882  885  888  891  894  897  900  903  906  909  912  915  918  921
+  924  927  930  933  936  939  942  945  948  951  954  957  960  963
+  966  969  972  975  978  981  984  987  990  993  996  999 1002 1005
+ 1008 1011 1014 1017 1020 1023 1026 1029 1032 1035 1038 1041 1044 1047
+ 1050 1053 1056 1059 1062 1065 1068 1071 1074 1077 1080 1083 1086 1089
+ 1092 1095 1098 1101 1104 1107 1110 1113 1116 1119 1122 1125 1128 1131
+ 1134 1137 1140 1143 1146 1149 1152 1155 1158 1161 1164 1167 1170 1173
+ 1176 1179 1182 1185 1188 1191 1194 1197 1200 1203 1206 1209 1212 1215
+ 1218 1221 1224 1227 1230 1233 1236 1239 1242 1245 1248 1251 1254 1257
+ 1260 1263 1266 1269 1272 1275 1278 1281 1284 1287 1290 1293 1296 1299
+ 1302 1305 1308 1311 1314 1317 1320 1323 1326 1329 1332 1335 1338 1341
+ 1344 1347 1350 1353 1356 1359 1362 1365 1368 1371 1374 1377 1380 1383
+ 1386 1389 1392 1395 1398 1401 1404 1407 1410 1413 1416 1419 1422 1425
+ 1428 1431 1434 1437 1440 1443 1446 1449 1452 1455 1458 1461 1464 1467
+ 1470 1473 1476 1479 1482 1485 1488 1491 1494 1497 1500 1503 1506 1509
+ 1512 1515 1518 1521 1524 1527 1530 1533]
+
+box = [[[2.4536052 0.        0.       ]
+  [0.        2.4536052 0.       ]
+  [0.        0.        2.4536052]]
+
+ [[2.4692893 0.        0.       ]
+  [0.        2.4692893 0.       ]
+  [0.        0.        2.4692893]]
+
+ [[2.4901657 0.        0.       ]
+  [0.        2.4901657 0.       ]
+  [0.        0.        2.4901657]]
+
+ ...
+
+ [[2.5055249 0.        0.       ]
+  [0.        2.5055249 0.       ]
+  [0.        0.        2.5055249]]
+
+ [[2.4754755 0.        0.       ]
+  [0.        2.4754755 0.       ]
+  [0.        0.        2.4754755]]
+
+ [[2.4589882 0.        0.       ]
+  [0.        2.4589882 0.       ]
+  [0.        0.        2.4589882]]]
+
+Printing the atomic details
+
+The residue names
+
+Index: 0 -> rname: HOH
+Index: 1 -> rname: HOH
+Index: 2 -> rname: HOH
+Index: 3 -> rname: HOH
+Index: 4 -> rname: HOH
+Index: 5 -> rname: HOH
+Index: 6 -> rname: HOH
+Index: 7 -> rname: HOH
+Index: 8 -> rname: HOH
+Index: 9 -> rname: HOH
+Index: 10 -> rname: HOH
+Index: 11 -> rname: HOH
+Index: 12 -> rname: HOH
+Index: 13 -> rname: HOH
+Index: 14 -> rname: HOH
+Index: 15 -> rname: HOH
+Index: 16 -> rname: HOH
+Index: 17 -> rname: HOH
+Index: 18 -> rname: HOH
+Index: 19 -> rname: HOH
+Index: 20 -> rname: HOH
+Index: 21 -> rname: HOH
+Index: 22 -> rname: HOH
+Index: 23 -> rname: HOH
+Index: 24 -> rname: HOH
+Index: 25 -> rname: HOH
+Index: 26 -> rname: HOH
+Index: 27 -> rname: HOH
+Index: 28 -> rname: HOH
+Index: 29 -> rname: HOH
+Index: 30 -> rname: HOH
+Index: 31 -> rname: HOH
+Index: 32 -> rname: HOH
+Index: 33 -> rname: HOH
+Index: 34 -> rname: HOH
+Index: 35 -> rname: HOH
+Index: 36 -> rname: HOH
+Index: 37 -> rname: HOH
+Index: 38 -> rname: HOH
+Index: 39 -> rname: HOH
+Index: 40 -> rname: HOH
+Index: 41 -> rname: HOH
+Index: 42 -> rname: HOH
+Index: 43 -> rname: HOH
+Index: 44 -> rname: HOH
+Index: 45 -> rname: HOH
+Index: 46 -> rname: HOH
+Index: 47 -> rname: HOH
+Index: 48 -> rname: HOH
+Index: 49 -> rname: HOH
+Index: 50 -> rname: HOH
+Index: 51 -> rname: HOH
+Index: 52 -> rname: HOH
+Index: 53 -> rname: HOH
+Index: 54 -> rname: HOH
+Index: 55 -> rname: HOH
+Index: 56 -> rname: HOH
+Index: 57 -> rname: HOH
+Index: 58 -> rname: HOH
+Index: 59 -> rname: HOH
+Index: 60 -> rname: HOH
+Index: 61 -> rname: HOH
+Index: 62 -> rname: HOH
+Index: 63 -> rname: HOH
+Index: 64 -> rname: HOH
+Index: 65 -> rname: HOH
+Index: 66 -> rname: HOH
+Index: 67 -> rname: HOH
+Index: 68 -> rname: HOH
+Index: 69 -> rname: HOH
+Index: 70 -> rname: HOH
+Index: 71 -> rname: HOH
+Index: 72 -> rname: HOH
+Index: 73 -> rname: HOH
+Index: 74 -> rname: HOH
+Index: 75 -> rname: HOH
+Index: 76 -> rname: HOH
+Index: 77 -> rname: HOH
+Index: 78 -> rname: HOH
+Index: 79 -> rname: HOH
+Index: 80 -> rname: HOH
+Index: 81 -> rname: HOH
+Index: 82 -> rname: HOH
+Index: 83 -> rname: HOH
+Index: 84 -> rname: HOH
+Index: 85 -> rname: HOH
+Index: 86 -> rname: HOH
+Index: 87 -> rname: HOH
+Index: 88 -> rname: HOH
+Index: 89 -> rname: HOH
+Index: 90 -> rname: HOH
+Index: 91 -> rname: HOH
+Index: 92 -> rname: HOH
+Index: 93 -> rname: HOH
+Index: 94 -> rname: HOH
+Index: 95 -> rname: HOH
+Index: 96 -> rname: HOH
+Index: 97 -> rname: HOH
+Index: 98 -> rname: HOH
+Index: 99 -> rname: HOH
+Index: 100 -> rname: HOH
+Index: 101 -> rname: HOH
+Index: 102 -> rname: HOH
+Index: 103 -> rname: HOH
+Index: 104 -> rname: HOH
+Index: 105 -> rname: HOH
+Index: 106 -> rname: HOH
+Index: 107 -> rname: HOH
+Index: 108 -> rname: HOH
+Index: 109 -> rname: HOH
+Index: 110 -> rname: HOH
+Index: 111 -> rname: HOH
+Index: 112 -> rname: HOH
+Index: 113 -> rname: HOH
+Index: 114 -> rname: HOH
+Index: 115 -> rname: HOH
+Index: 116 -> rname: HOH
+Index: 117 -> rname: HOH
+Index: 118 -> rname: HOH
+Index: 119 -> rname: HOH
+Index: 120 -> rname: HOH
+Index: 121 -> rname: HOH
+Index: 122 -> rname: HOH
+Index: 123 -> rname: HOH
+Index: 124 -> rname: HOH
+Index: 125 -> rname: HOH
+Index: 126 -> rname: HOH
+Index: 127 -> rname: HOH
+Index: 128 -> rname: HOH
+Index: 129 -> rname: HOH
+Index: 130 -> rname: HOH
+Index: 131 -> rname: HOH
+Index: 132 -> rname: HOH
+Index: 133 -> rname: HOH
+Index: 134 -> rname: HOH
+Index: 135 -> rname: HOH
+Index: 136 -> rname: HOH
+Index: 137 -> rname: HOH
+Index: 138 -> rname: HOH
+Index: 139 -> rname: HOH
+Index: 140 -> rname: HOH
+Index: 141 -> rname: HOH
+Index: 142 -> rname: HOH
+Index: 143 -> rname: HOH
+Index: 144 -> rname: HOH
+Index: 145 -> rname: HOH
+Index: 146 -> rname: HOH
+Index: 147 -> rname: HOH
+Index: 148 -> rname: HOH
+Index: 149 -> rname: HOH
+Index: 150 -> rname: HOH
+Index: 151 -> rname: HOH
+Index: 152 -> rname: HOH
+Index: 153 -> rname: HOH
+Index: 154 -> rname: HOH
+Index: 155 -> rname: HOH
+Index: 156 -> rname: HOH
+Index: 157 -> rname: HOH
+Index: 158 -> rname: HOH
+Index: 159 -> rname: HOH
+Index: 160 -> rname: HOH
+Index: 161 -> rname: HOH
+Index: 162 -> rname: HOH
+Index: 163 -> rname: HOH
+Index: 164 -> rname: HOH
+Index: 165 -> rname: HOH
+Index: 166 -> rname: HOH
+Index: 167 -> rname: HOH
+Index: 168 -> rname: HOH
+Index: 169 -> rname: HOH
+Index: 170 -> rname: HOH
+Index: 171 -> rname: HOH
+Index: 172 -> rname: HOH
+Index: 173 -> rname: HOH
+Index: 174 -> rname: HOH
+Index: 175 -> rname: HOH
+Index: 176 -> rname: HOH
+Index: 177 -> rname: HOH
+Index: 178 -> rname: HOH
+Index: 179 -> rname: HOH
+Index: 180 -> rname: HOH
+Index: 181 -> rname: HOH
+Index: 182 -> rname: HOH
+Index: 183 -> rname: HOH
+Index: 184 -> rname: HOH
+Index: 185 -> rname: HOH
+Index: 186 -> rname: HOH
+Index: 187 -> rname: HOH
+Index: 188 -> rname: HOH
+Index: 189 -> rname: HOH
+Index: 190 -> rname: HOH
+Index: 191 -> rname: HOH
+Index: 192 -> rname: HOH
+Index: 193 -> rname: HOH
+Index: 194 -> rname: HOH
+Index: 195 -> rname: HOH
+Index: 196 -> rname: HOH
+Index: 197 -> rname: HOH
+Index: 198 -> rname: HOH
+Index: 199 -> rname: HOH
+Index: 200 -> rname: HOH
+Index: 201 -> rname: HOH
+Index: 202 -> rname: HOH
+Index: 203 -> rname: HOH
+Index: 204 -> rname: HOH
+Index: 205 -> rname: HOH
+Index: 206 -> rname: HOH
+Index: 207 -> rname: HOH
+Index: 208 -> rname: HOH
+Index: 209 -> rname: HOH
+Index: 210 -> rname: HOH
+Index: 211 -> rname: HOH
+Index: 212 -> rname: HOH
+Index: 213 -> rname: HOH
+Index: 214 -> rname: HOH
+Index: 215 -> rname: HOH
+Index: 216 -> rname: HOH
+Index: 217 -> rname: HOH
+Index: 218 -> rname: HOH
+Index: 219 -> rname: HOH
+Index: 220 -> rname: HOH
+Index: 221 -> rname: HOH
+Index: 222 -> rname: HOH
+Index: 223 -> rname: HOH
+Index: 224 -> rname: HOH
+Index: 225 -> rname: HOH
+Index: 226 -> rname: HOH
+Index: 227 -> rname: HOH
+Index: 228 -> rname: HOH
+Index: 229 -> rname: HOH
+Index: 230 -> rname: HOH
+Index: 231 -> rname: HOH
+Index: 232 -> rname: HOH
+Index: 233 -> rname: HOH
+Index: 234 -> rname: HOH
+Index: 235 -> rname: HOH
+Index: 236 -> rname: HOH
+Index: 237 -> rname: HOH
+Index: 238 -> rname: HOH
+Index: 239 -> rname: HOH
+Index: 240 -> rname: HOH
+Index: 241 -> rname: HOH
+Index: 242 -> rname: HOH
+Index: 243 -> rname: HOH
+Index: 244 -> rname: HOH
+Index: 245 -> rname: HOH
+Index: 246 -> rname: HOH
+Index: 247 -> rname: HOH
+Index: 248 -> rname: HOH
+Index: 249 -> rname: HOH
+Index: 250 -> rname: HOH
+Index: 251 -> rname: HOH
+Index: 252 -> rname: HOH
+Index: 253 -> rname: HOH
+Index: 254 -> rname: HOH
+Index: 255 -> rname: HOH
+Index: 256 -> rname: HOH
+Index: 257 -> rname: HOH
+Index: 258 -> rname: HOH
+Index: 259 -> rname: HOH
+Index: 260 -> rname: HOH
+Index: 261 -> rname: HOH
+Index: 262 -> rname: HOH
+Index: 263 -> rname: HOH
+Index: 264 -> rname: HOH
+Index: 265 -> rname: HOH
+Index: 266 -> rname: HOH
+Index: 267 -> rname: HOH
+Index: 268 -> rname: HOH
+Index: 269 -> rname: HOH
+Index: 270 -> rname: HOH
+Index: 271 -> rname: HOH
+Index: 272 -> rname: HOH
+Index: 273 -> rname: HOH
+Index: 274 -> rname: HOH
+Index: 275 -> rname: HOH
+Index: 276 -> rname: HOH
+Index: 277 -> rname: HOH
+Index: 278 -> rname: HOH
+Index: 279 -> rname: HOH
+Index: 280 -> rname: HOH
+Index: 281 -> rname: HOH
+Index: 282 -> rname: HOH
+Index: 283 -> rname: HOH
+Index: 284 -> rname: HOH
+Index: 285 -> rname: HOH
+Index: 286 -> rname: HOH
+Index: 287 -> rname: HOH
+Index: 288 -> rname: HOH
+Index: 289 -> rname: HOH
+Index: 290 -> rname: HOH
+Index: 291 -> rname: HOH
+Index: 292 -> rname: HOH
+Index: 293 -> rname: HOH
+Index: 294 -> rname: HOH
+Index: 295 -> rname: HOH
+Index: 296 -> rname: HOH
+Index: 297 -> rname: HOH
+Index: 298 -> rname: HOH
+Index: 299 -> rname: HOH
+Index: 300 -> rname: HOH
+Index: 301 -> rname: HOH
+Index: 302 -> rname: HOH
+Index: 303 -> rname: HOH
+Index: 304 -> rname: HOH
+Index: 305 -> rname: HOH
+Index: 306 -> rname: HOH
+Index: 307 -> rname: HOH
+Index: 308 -> rname: HOH
+Index: 309 -> rname: HOH
+Index: 310 -> rname: HOH
+Index: 311 -> rname: HOH
+Index: 312 -> rname: HOH
+Index: 313 -> rname: HOH
+Index: 314 -> rname: HOH
+Index: 315 -> rname: HOH
+Index: 316 -> rname: HOH
+Index: 317 -> rname: HOH
+Index: 318 -> rname: HOH
+Index: 319 -> rname: HOH
+Index: 320 -> rname: HOH
+Index: 321 -> rname: HOH
+Index: 322 -> rname: HOH
+Index: 323 -> rname: HOH
+Index: 324 -> rname: HOH
+Index: 325 -> rname: HOH
+Index: 326 -> rname: HOH
+Index: 327 -> rname: HOH
+Index: 328 -> rname: HOH
+Index: 329 -> rname: HOH
+Index: 330 -> rname: HOH
+Index: 331 -> rname: HOH
+Index: 332 -> rname: HOH
+Index: 333 -> rname: HOH
+Index: 334 -> rname: HOH
+Index: 335 -> rname: HOH
+Index: 336 -> rname: HOH
+Index: 337 -> rname: HOH
+Index: 338 -> rname: HOH
+Index: 339 -> rname: HOH
+Index: 340 -> rname: HOH
+Index: 341 -> rname: HOH
+Index: 342 -> rname: HOH
+Index: 343 -> rname: HOH
+Index: 344 -> rname: HOH
+Index: 345 -> rname: HOH
+Index: 346 -> rname: HOH
+Index: 347 -> rname: HOH
+Index: 348 -> rname: HOH
+Index: 349 -> rname: HOH
+Index: 350 -> rname: HOH
+Index: 351 -> rname: HOH
+Index: 352 -> rname: HOH
+Index: 353 -> rname: HOH
+Index: 354 -> rname: HOH
+Index: 355 -> rname: HOH
+Index: 356 -> rname: HOH
+Index: 357 -> rname: HOH
+Index: 358 -> rname: HOH
+Index: 359 -> rname: HOH
+Index: 360 -> rname: HOH
+Index: 361 -> rname: HOH
+Index: 362 -> rname: HOH
+Index: 363 -> rname: HOH
+Index: 364 -> rname: HOH
+Index: 365 -> rname: HOH
+Index: 366 -> rname: HOH
+Index: 367 -> rname: HOH
+Index: 368 -> rname: HOH
+Index: 369 -> rname: HOH
+Index: 370 -> rname: HOH
+Index: 371 -> rname: HOH
+Index: 372 -> rname: HOH
+Index: 373 -> rname: HOH
+Index: 374 -> rname: HOH
+Index: 375 -> rname: HOH
+Index: 376 -> rname: HOH
+Index: 377 -> rname: HOH
+Index: 378 -> rname: HOH
+Index: 379 -> rname: HOH
+Index: 380 -> rname: HOH
+Index: 381 -> rname: HOH
+Index: 382 -> rname: HOH
+Index: 383 -> rname: HOH
+Index: 384 -> rname: HOH
+Index: 385 -> rname: HOH
+Index: 386 -> rname: HOH
+Index: 387 -> rname: HOH
+Index: 388 -> rname: HOH
+Index: 389 -> rname: HOH
+Index: 390 -> rname: HOH
+Index: 391 -> rname: HOH
+Index: 392 -> rname: HOH
+Index: 393 -> rname: HOH
+Index: 394 -> rname: HOH
+Index: 395 -> rname: HOH
+Index: 396 -> rname: HOH
+Index: 397 -> rname: HOH
+Index: 398 -> rname: HOH
+Index: 399 -> rname: HOH
+Index: 400 -> rname: HOH
+Index: 401 -> rname: HOH
+Index: 402 -> rname: HOH
+Index: 403 -> rname: HOH
+Index: 404 -> rname: HOH
+Index: 405 -> rname: HOH
+Index: 406 -> rname: HOH
+Index: 407 -> rname: HOH
+Index: 408 -> rname: HOH
+Index: 409 -> rname: HOH
+Index: 410 -> rname: HOH
+Index: 411 -> rname: HOH
+Index: 412 -> rname: HOH
+Index: 413 -> rname: HOH
+Index: 414 -> rname: HOH
+Index: 415 -> rname: HOH
+Index: 416 -> rname: HOH
+Index: 417 -> rname: HOH
+Index: 418 -> rname: HOH
+Index: 419 -> rname: HOH
+Index: 420 -> rname: HOH
+Index: 421 -> rname: HOH
+Index: 422 -> rname: HOH
+Index: 423 -> rname: HOH
+Index: 424 -> rname: HOH
+Index: 425 -> rname: HOH
+Index: 426 -> rname: HOH
+Index: 427 -> rname: HOH
+Index: 428 -> rname: HOH
+Index: 429 -> rname: HOH
+Index: 430 -> rname: HOH
+Index: 431 -> rname: HOH
+Index: 432 -> rname: HOH
+Index: 433 -> rname: HOH
+Index: 434 -> rname: HOH
+Index: 435 -> rname: HOH
+Index: 436 -> rname: HOH
+Index: 437 -> rname: HOH
+Index: 438 -> rname: HOH
+Index: 439 -> rname: HOH
+Index: 440 -> rname: HOH
+Index: 441 -> rname: HOH
+Index: 442 -> rname: HOH
+Index: 443 -> rname: HOH
+Index: 444 -> rname: HOH
+Index: 445 -> rname: HOH
+Index: 446 -> rname: HOH
+Index: 447 -> rname: HOH
+Index: 448 -> rname: HOH
+Index: 449 -> rname: HOH
+Index: 450 -> rname: HOH
+Index: 451 -> rname: HOH
+Index: 452 -> rname: HOH
+Index: 453 -> rname: HOH
+Index: 454 -> rname: HOH
+Index: 455 -> rname: HOH
+Index: 456 -> rname: HOH
+Index: 457 -> rname: HOH
+Index: 458 -> rname: HOH
+Index: 459 -> rname: HOH
+Index: 460 -> rname: HOH
+Index: 461 -> rname: HOH
+Index: 462 -> rname: HOH
+Index: 463 -> rname: HOH
+Index: 464 -> rname: HOH
+Index: 465 -> rname: HOH
+Index: 466 -> rname: HOH
+Index: 467 -> rname: HOH
+Index: 468 -> rname: HOH
+Index: 469 -> rname: HOH
+Index: 470 -> rname: HOH
+Index: 471 -> rname: HOH
+Index: 472 -> rname: HOH
+Index: 473 -> rname: HOH
+Index: 474 -> rname: HOH
+Index: 475 -> rname: HOH
+Index: 476 -> rname: HOH
+Index: 477 -> rname: HOH
+Index: 478 -> rname: HOH
+Index: 479 -> rname: HOH
+Index: 480 -> rname: HOH
+Index: 481 -> rname: HOH
+Index: 482 -> rname: HOH
+Index: 483 -> rname: HOH
+Index: 484 -> rname: HOH
+Index: 485 -> rname: HOH
+Index: 486 -> rname: HOH
+Index: 487 -> rname: HOH
+Index: 488 -> rname: HOH
+Index: 489 -> rname: HOH
+Index: 490 -> rname: HOH
+Index: 491 -> rname: HOH
+Index: 492 -> rname: HOH
+Index: 493 -> rname: HOH
+Index: 494 -> rname: HOH
+Index: 495 -> rname: HOH
+Index: 496 -> rname: HOH
+Index: 497 -> rname: HOH
+Index: 498 -> rname: HOH
+Index: 499 -> rname: HOH
+Index: 500 -> rname: HOH
+Index: 501 -> rname: HOH
+Index: 502 -> rname: HOH
+Index: 503 -> rname: HOH
+Index: 504 -> rname: HOH
+Index: 505 -> rname: HOH
+Index: 506 -> rname: HOH
+Index: 507 -> rname: HOH
+Index: 508 -> rname: HOH
+Index: 509 -> rname: HOH
+Index: 510 -> rname: HOH
+Index: 511 -> rname: HOH
+
+The topol.atom = 
+HOH1
+
