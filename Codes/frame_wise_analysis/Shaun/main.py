@@ -91,8 +91,10 @@ for nf in range(0, nframes):
 	# Add print statement to check the command
 	print(cmd)
 	os.system(cmd)
-
+ 
 	ffile=open(frame_file_name,'r')
+	C=extract_pdb.extractor(frame_file_name)
+
 	lcount = 0
 	natoms = 0
 	coord=[]
@@ -101,7 +103,6 @@ for nf in range(0, nframes):
 	y_main=[]
 	z_main=[]   
 	
-	C=extract_pdb.extractor(frame_file_name)
 
 	index=C[1,:]
 	chain=C[2,:]

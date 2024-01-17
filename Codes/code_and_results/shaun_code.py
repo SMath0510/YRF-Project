@@ -10,7 +10,9 @@ import matplotlib.pyplot as plt
 import concurrent.futures ## For implementing parallelization in centrality
 from scipy.spatial import cKDTree ## Using kdtree data structure for optimisation
 from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 import copy
+from matplotlib import colormaps
 
 print("Version NetworkX = " + nx.__version__)
 
@@ -18,32 +20,56 @@ print("Version NetworkX = " + nx.__version__)
 xtcname = 'water_traj/bulk_tip3p_all_part1.xtc'
 groname = 'water_traj/bulk_tip3p_all.gro'
 
-#mode of execution
-approximate = False
-threading = False
-multiprocessing = True
-community_analysis = True
+# Execution Parameters
+cmd_print = False
 optimize_loops = True
-test = False
-stop = False
+subgraph_threading = False
 
-shortest_path_mode = "unweighted-all-pair-shortest-paths"
-# shortest_path_mode = "all-pair-dijkstras"
+approximate = False
+approximation_factor = 0.7
+'''
+Approximation factor <= 1
+1 -> perfect accuracy
+'''
+
+threading = False
+'''
+Useful for File Operations and I/O based operations
+'''
+
+multiprocessing = False
+'''
+Useful for CPU intensive operations
+'''
+
+
+weighted = None
+'''
+Choices: None, 
+         "weight"
+'''
+
+default_shortest_path_mode = "unweighted-all-pair-shortest-path"
+'''
+Choices: "unweighted-all-pair-shortest-path", [preferred if unweighted graph]
+         "floyd-warshall", [preferred if weighted dense graph]
+         "all-pair-dijkstras" [preferred if weighted sparse graph]
+'''
 
 print("filenames read")
 #output filenames
 head = "shaun_outputs/"
+
+status = ""
+if subgraph_threading:
+    status += "subgraphtheading_"
 if threading:
-    head = head + "with_threading_"
-elif multiprocessing:
-    head = head + "with_multiprocessing_"
-else:
-    head = head + "without_threading_"
-    
-if approximate:
-    head = head + "with_approximation/"
-else:
-    head = head + "without_approximation/"
+    status += "threading_"
+if multiprocessing:
+    status += "multiprocessing_"
+if optimize_loops:
+    status += "kd_optim_"
+status += f"{default_shortest_path_mode}"
     
 extnname='.dat'
 file1name=head + 'Network_Stats_'+extnname
@@ -52,7 +78,10 @@ file3name=head + 'hbweight_histogram_'+extnname
 file5name=head + 'Pathlength_histogram_'+extnname
 file6name=head + 'PerFrame_HistCount_'+extnname
 file7name=head + 'Centrality_histogram_'+extnname
-file9name = head + "Average Bond Strength.csv"
+file8name = head + 'Average_Bond_Strength.csv'
+file9name = head + 'Community_Analysis.txt'
+file10name = head + f'Time_Analysis_{status}.csv'
+file11name = head + f'KD_Analysis2.csv'
 #
 traj = md.load(xtcname,top=groname)   
 info = traj.xyz.shape
@@ -80,6 +109,8 @@ ndon = len(donors)
 #Acceptors
 acceptors = topol.select('name O')
 nacc = len(acceptors)
+
+## Mathematical Operations
 
 def AINT(val):
 	return int(val)
@@ -150,6 +181,9 @@ def angle(frame,n1,n2,n3):
 	angle_rad = (np.arccos(x))  
 	angle = np.rad2deg(angle_rad)      # angle in degrees
 	return angle
+##
+
+## File Handling 
 
 file1 = open(file1name,"w")
 file1.write("#Frame \t #Hbonds \t #HBNetNodes \t #HBNetEdges \n")
@@ -163,18 +197,27 @@ file6 = open(file6name, "w")
 file6.write("#Frame\t #WatHBAcc\t #WatHBDon\t #WatTotHB\t #HBPaths \t #TwoEdges \t #MultiEdges \t #HBNodesNoinpath \n")
 file7 = open(file7name, "w")
 file7.write("#Frame \t WatClCen \t WatBtCen\n")
-if test: 
-    file8 = open("test_shaun.txt", "w")
+file8 = open(file8name, "w")
+file8.write(f'Key, Avg. Strength\n')
 file9 = open(file9name, "w")
-file9.write(f'Key, Avg. Strength\n')
+file10 = open(file10name, "w")
+file10.write(f"Closeness, Betweeness, Eigen, Threading, Multiprocessing\n")
+file11 = open(file11name, "w")
+file11.write(f"Frame, Potential, Actual\n")
+
+##
+
+## Graph Creation
 hbnet = nx.MultiDiGraph()
-watnet = nx.MultiDiGraph() 
+# watnet = nx.MultiDiGraph() 
+
+## Defining the graph based constraints
 wmin = 0.4 # 0.14/0.35 as 3.5 A is the h-bond cut-off distance
 wmax = 0.6 # 0.14/0.23 as 2.3 A is the absolute hard sphere radius because gr of wat-wat oxygens is absolutely 0.0 upto 2.3 A
 cosmin = np.cos(30*np.pi/180)
 cosnorm = 1.0 - cosmin
-print(cosmin,cosnorm)
-#
+
+## Defining histogram specific constraints
 nhb = 40
 nhb_hist = np.zeros((nhb,3),int)
 mpl = 100
@@ -186,142 +229,165 @@ mcen = 100
 cen_hist = np.zeros((mcen,2),int)
 btbin_width = 0.005
 clbin_width = 0.01
+
+## KD - Tree Loop Optimisation distance threshold
 kd_tree_threshold = 0.4
 
+centrality_time_check = True
+
+## H-bond lifetime analysis global params
 old_hbond_list = []
 latest_hbond_list = []
 average_hbond_life_mapping = {}
 
+## Useful Functions 
 
-def update_mapping(frame_no, num_nodes, max_frames = 2):
+def matrix_to_dict(mat):
+    dict_ = {}
+    rows_ = mat.shape[0]  
+    cols_ = mat.shape[1] 
+    for i in range(rows_):
+        entry_ = {}
+        for j in range(cols_):
+            entry_.update({j: mat[i, j]})  
+        dict_.update({i: entry_})
+
+    return dict_  
+
+def calculate_shortest_path(G, mode = default_shortest_path_mode):
+    if mode == "floyd-warshall":
+        path = matrix_to_dict(nx.floyd_warshall_numpy(G))  
+    elif mode == "all-pair-dijkstras":
+        path = dict(nx.all_pairs_dijkstra_path_length(G))
+    elif mode == "unweighted-all-pair-shortest-paths":
+        path = dict(nx.all_pairs_shortest_path_length(G))
+    
+    return path
+
+def calculate_centrality(G, mode = "closeness", weight_mode = weighted, approximate_status = approximate, factor = approximation_factor):
+    num_nodes = G.number_of_nodes()
+    if not approximate_status:
+        factor = 1
+    k_factor = int(factor * num_nodes)
+    if mode == "closeness":
+        centrality_value = nx.closeness_centrality(G, distance=weight_mode)
+    elif mode == "betweeness":
+        centrality_value = nx.betweenness_centrality(G, weight=weight_mode, k = k_factor)
+    elif mode == "degree":
+        centrality_value = nx.degree_centrality(G)
+    elif mode == "eigen":
+        centrality_value = nx.eigenvector_centrality_numpy(G, weight=weight_mode, max_iter=1000)
+    elif mode == "katz":
+        centrality_value = nx.katz_centrality(G, weight=weight_mode)
+    elif mode == "pagerank":
+        centrality_value = nx.pagerank(G, weight=weight_mode)
+    return centrality_value
+    
+def calculate_centrality_for_subgraphs(hbnet, centrality_type):
+    connected_components = list(nx.weakly_connected_components(hbnet))
+    subgraphs = [hbnet.subgraph(component).copy() for component in connected_components]
+
+    # Use parallel processing to calculate centrality for each connected component
+    with ProcessPoolExecutor() as executor:
+        try: 
+            centrality_list = list(executor.map(calculate_centrality, subgraphs, [centrality_type]*len(subgraphs)))
+        except:
+            centrality_list = [calculate_centrality(hbnet, centrality_type)]
+
+    # Combine results into a single dictionary
+    centrality_combined = {}
+    for node_centrality_detail in centrality_list:
+        centrality_combined.update(node_centrality_detail)
+
+    centrality_combined = dict(sorted(centrality_combined.items()))
+    return centrality_combined
+
+def update_mapping(frame_no, max_frames=2):
     print(f'Updating Mapping: {frame_no+1}/{max_frames}')
-    for key in latest_hbond_list:
+    
+    for key in set(latest_hbond_list) - set(old_hbond_list):
+        average_hbond_life_mapping.setdefault(key, {'Start': frame_no, 'End': frame_no, 'Time_List': []})
         
-        if key not in average_hbond_life_mapping.keys():
-            average_hbond_life_mapping[key] = {'Start': None, 'End': None, 'Time_List': []}
-        
-        if (key not in old_hbond_list) or (average_hbond_life_mapping[key]['Start'] is None):
-            average_hbond_life_mapping[key]['Start'] = frame_no
-        
+    for key in set(old_hbond_list) - set(latest_hbond_list):
         average_hbond_life_mapping[key]['End'] = frame_no
-        
-            
-    for key in old_hbond_list:
-        
-        if key not in average_hbond_life_mapping.keys():
-            average_hbond_life_mapping[key] = {'Start': None, 'End': None, 'Time_List': []}
-        
-        if (key not in latest_hbond_list):
-            average_hbond_life_mapping[key]['End'] = frame_no
-            average_hbond_life_mapping[key]['Time_List'].append(
-                average_hbond_life_mapping[key]['End'] - average_hbond_life_mapping[key]['Start']
-            )
+        average_hbond_life_mapping[key]['Time_List'].append(
+            average_hbond_life_mapping[key]['End'] - average_hbond_life_mapping[key]['Start']
+        )
 
-    if ((frame_no + 1) == max_frames):
-        for key in latest_hbond_list:
+    if frame_no + 1 == max_frames:
+        for key in set(latest_hbond_list):
             average_hbond_life_mapping[key]['End'] = frame_no + 1
             average_hbond_life_mapping[key]['Time_List'].append(
                 average_hbond_life_mapping[key]['End'] - average_hbond_life_mapping[key]['Start']
             )
 
-                
-            
-#
 
-# Defining some centrality functions (with optimisation)
-def calculate_closeness_centrality(graph):
-    return nx.closeness_centrality(graph, distance="weight")
-
-def calculate_betweenness_centrality(graph):
-    return nx.betweenness_centrality(graph, weight="weight")
-
-def calculate_degree_centrality(graph):
-    return nx.degree_centrality(graph)
-
-def calculate_eigenvector_centrality(graph):
-    return nx.eigenvector_centrality(graph, weight="weight", max_iter=1000)
-
-def calculate_katz_centrality(graph):
-    return nx.katz_centrality(graph, weight="weight")
-
-def calculate_pagerank_centrality(graph):
-    return nx.pagerank(graph, weight="weight")
         
 #
 print("No. of frames: %d"%(n_frame))
 
-num_iter = min(10, n_frame)
+for i in range (0,nres) :
+    rname = topol.residue(i).name
+    hbnet.add_node(i,name=rname)
+    if(rname == "HOH"):
+        ## Can add it as a node in water network
+        pass
+
+## For testing purposes    
+num_iter = 20
+
 for frame in range(0,num_iter):
-    if test: 
-        print(coord[frame].shape)
-        print(acceptors.shape)
-        print(acceptors[0])
-    # if stop:
-    #     break
+    local_start_time = time.time()
     if optimize_loops: 
         kdtree = cKDTree(coord[frame]) 
     count =0
-    for i in range (0,nres) :
-        rname = topol.residue(i).name
-        hbnet.add_node(i,name=rname)
-        if(rname == "HOH"):
-            watnet.add_node(i)
-	#
+
     ## Applying an optimisation that converts the code from O(n2) to O(nlogn)
     for donor_index in donors:
         index1 = donor_index
         rid1 = topol.atom(index1).residue.index
+        
+        ## Optimization
         if optimize_loops:
-           potential_acceptors_indices = [acc_index for acc_index in acceptors if distance_sq(frame, index1, acc_index) <= kd_tree_threshold]
+        #    potential_acceptors_indices = [acc_index for acc_index in acceptors if distance_sq(frame, index1, acc_index) <= kd_tree_threshold]
+            potential_acceptors_indices = kdtree.query_ball_point(coord[frame][index1], kd_tree_threshold)
+
         else:
             potential_acceptors_indices = acceptors
+            
+        accepted = 0
         for acceptor_index in potential_acceptors_indices:
             index2 = acceptor_index
             rid2 = topol.atom(index2).residue.index
-			#if index1 != index2:
+            
             if rid1 != rid2:
                 DAdist_sq = distance_sq(frame,index1,index2)
                 if DAdist_sq <= 0.1225:
-                    if test:
-                        file8.write("Donor Index: %d, Acceptor Index: %d, DistSquared: %d\n" %( donor_index, acceptor_index, DAdist_sq))
+                    accepted = accepted + 1
                     angle_h1 = angle(frame,index1+1,index1,index2)
                     if angle_h1 <= 30:
                         count = count + 1
-                        #frac = 0.14/math.sqrt(DAdist_sq)
-                        #rratio = (frac - wmin)/(wmax - wmin)
-                        #cosang = np.cos(angle_h1*np.pi/180)
-                        #angwt = (cosang - cosmin)/cosnorm
                         wt = 1.0
                         hbnet.add_edge(rid1,rid2,weight=wt)
                     angle_h2 = angle(frame,index1+2,index1,index2)
                     if angle_h2 <= 30:
                         count = count + 1
-                        #frac = 0.14/math.sqrt(DAdist_sq)
-                        #rratio = (frac - wmin)/(wmax - wmin)
-                        #cosang = np.cos(angle_h2*np.pi/180)
-                        #angwt = (cosang - cosmin)/cosnorm
                         wt = 1.0 
                         hbnet.add_edge(rid1,rid2,weight=wt)
                     #Angle loops
                 #heavy atom distance loop
         #end of acceptor loop
+        file11.write(f'{frame}, {len(potential_acceptors_indices)}, {accepted}\n')
     #end of donor loop
     #in_degree = number of h-bonds accepted by the molecule
     #out_degree = number of h-bonds donated by the molecule
-    print("Network created for frame %d"%(frame))
-    print("--- %s seconds ---" % (time.time() - start_time))   
-       
-    # Store copies as deep copies
-    old_hbond_list = copy.deepcopy(latest_hbond_list)
-    latest_hbond_list = copy.deepcopy(hbnet.edges)
-    print(f'After first update, OldSize: {len(old_hbond_list)}, NewSize: {len(latest_hbond_list)}')
-    update_mapping(frame_no=frame, num_nodes=topol.n_atoms, max_frames=num_iter)
+    print(f'{frame}/{n_frame}')
+    if cmd_print:
+        print("Network created for frame %d"%(frame))
+        print("--- %s seconds ---" % (time.time() - start_time))
     
-    print("after path updations")
-    print("--- %s seconds ---" % (time.time() - start_time))   
-    
-    if stop:
-        continue
+    graph_creation_time = time.time() - local_start_time   
+    continue
                             
     wwcount = 0
     # weight distribution
@@ -333,107 +399,137 @@ for frame in range(0,num_iter):
                 weight_hist[bin] = weight_hist[bin] + 1
                 wwcount = wwcount + 1
                 
-    # path length properties using Floyd-Warshall
-    if shortest_path_mode == "floyd-warshall":
-        path = dict(nx.floyd_warshall(hbnet))   ## Applying Floyd Warshall on the graph
-    elif shortest_path_mode == "all-pair-dijkstras":
-        path = dict(nx.all_pairs_dijkstra_path_length(hbnet))
-    elif shortest_path_mode == "unweighted-all-pair-shortest-paths":
-        path = dict(nx.all_pairs_shortest_path_length(hbnet))
+        ## H-bond Time Analysis
+    local_start_time = time.time()
+    old_hbond_list = copy.deepcopy(latest_hbond_list)
+    latest_hbond_list = copy.deepcopy(hbnet.edges)
+    
+    update_mapping(frame_no=frame, max_frames=num_iter)
+    
+    if cmd_print:
+        print("After the Hydrogen Bond Time Analysis")
+        print("--- %s seconds ---" % (time.time() - start_time))   
+    
+    h_bond_time_analysis = time.time() - local_start_time
+    
+    ## Shortest Path Calculations
+    local_start_time = time.time()
+    
+    shortest_path_mode = "unweighted-all-pair-shortest-paths"
+    path = calculate_shortest_path(hbnet, mode = shortest_path_mode)
 
-    print("after Shortest path %s path for 1st network", shortest_path_mode)
-    print("--- %s seconds ---" % (time.time() - start_time))
-                        
+    if cmd_print:
+        print("after Shortest path %s method for 1st network" % shortest_path_mode)
+        print("--- %s seconds ---" % (time.time() - start_time))
+
+    shortest_path_time = time.time() - local_start_time             
+    
     #
-    waccsum = 0
-    wdonsum = 0
-    whbsum = 0
-    pcount = 0
-    mecount=0
-    mecount2=0
-    file1.write("%d\t\t%d\t\t%d\t\t%d\n"%(frame,count,hbnet.number_of_nodes(), hbnet.number_of_edges()))
+    # waccsum = 0
+    # wdonsum = 0
+    # whbsum = 0
+    # pcount = 0
+    # mecount=0
+    # mecount2=0
+    # file1.write("%d\t\t%d\t\t%d\t\t%d\n"%(frame,count,hbnet.number_of_nodes(), hbnet.number_of_edges()))
 	
     
-    waccsum = sum(hbnet.in_degree(nd) for nd in hbnet.nodes)
-    wdonsum = sum(hbnet.out_degree(nd) for nd in hbnet.nodes)
-    whbsum = sum(hbnet.degree(nd) for nd in hbnet.nodes)
+    # waccsum = sum(hbnet.in_degree(nd) for nd in hbnet.nodes)
+    # wdonsum = sum(hbnet.out_degree(nd) for nd in hbnet.nodes)
+    # whbsum = sum(hbnet.degree(nd) for nd in hbnet.nodes)
 
-    mecount = sum(1 for nd in hbnet.nodes for nd2 in hbnet.nodes if nd != nd2 and hbnet.number_of_edges(nd, nd2) > 1)
-    mecount2 = sum(1 for nd in hbnet.nodes for nd2 in hbnet.nodes if nd != nd2 and hbnet.number_of_edges(nd, nd2) > 2)
+    # mecount = sum(1 for nd in hbnet.nodes for nd2 in hbnet.nodes if nd != nd2 and hbnet.number_of_edges(nd, nd2) > 1)
+    # mecount2 = sum(1 for nd in hbnet.nodes for nd2 in hbnet.nodes if nd != nd2 and hbnet.number_of_edges(nd, nd2) > 2)
 
-    for value, hist_index in zip([hbnet.in_degree(nd) for nd in hbnet.nodes], [0, 1, 2]):
-        if value < nhb:
-            nhb_hist[value][hist_index] += 1
-        else:
-            print("Number of Hbonds exceeds %d" % nhb)
+    # for value, hist_index in zip([hbnet.in_degree(nd) for nd in hbnet.nodes], [0, 1, 2]):
+    #     if value < nhb:
+    #         nhb_hist[value][hist_index] += 1
+    #     else:
+    #         print("Number of Hbonds exceeds %d" % nhb)
 
 		#
     #hbnet node loop
-    print("after loop network for 1st network")
-    print("--- %s seconds ---" % (time.time() - start_time))   
+    if cmd_print:
+        print("after loop network for 1st network")
+        print("--- %s seconds ---" % (time.time() - start_time))   
     
-    if shortest_path_mode == "floyd-warshall":
-        for ss in path:
-            for tt, nconn in path[ss].items():
-                if math.isfinite(nconn) and nconn > 0:
-                    pcount += 1
-                    if nconn < mpl:
-                        path_hist[int(nconn)] += 1  # Convert to int to get the number of edges
-                    else:
-                        print("Total path length %d exceeds maximum path length of %d" % (nconn, mpl))
-                        # print frame, ss, tt, nconn, path[ss][tt]
-    elif shortest_path_mode == "all-pair-dijkstras":
-        for ss in path.keys():
-            for tt, path_length in path[ss].items():
-                if path_length > 0:  # Exclude self-loops
-                    path_length = int(path_length)
-                    pcount += 1
-                    if path_length < mpl:
-                        path_hist[path_length] += 1
-                    else:
-                        print("Total path length %d exceeds maximum path length of %d" % (path_length, mpl))
-                        # print frame, ss, tt, path_length
-    elif shortest_path_mode == "unweighted-all-pair-shortest-paths":
-        for ss in path:
-            for tt, path_length in path[ss].items():
-                if path_length > 0:  # Exclude self-loops
-                    pcount += 1
-                    if path_length < mpl:
-                        path_hist[int(path_length)] += 1  # Convert to int to use as an index
-                    else:
-                        print("Total path length %d exceeds maximum path length of %d" % (path_length, mpl))
-                        # print frame, ss, tt, path_length
-                
-    print("after path histogram for 1st network")
-    print("--- %s seconds ---" % (time.time() - start_time))     
-                            
-    #Centrality Analysis
+    # for ss in path.keys():
+    #         for tt, path_length in path[ss].items():
+    #             if math.isfinite(path_length) and path_length > 0:
+    #                 path_length = int(path_length)
+    #                 pcount += 1
+    #                 if path_length < mpl:
+    #                     path_hist[int(path_length)] += 1  # Convert to int to get the number of edges
+    #                 else:
+    #                     print("Total path length %d exceeds maximum path length of %d" % (path_length, mpl))
+        
+    
+    # if cmd_print:
+    #     print("after path histogram for 1st network")
+    #     print("--- %s seconds ---" % (time.time() - start_time))     
+                      
+    ## Centrality Analysis
     #clcen - closeness centrality gives the product of ratio of nodes that can reach a given node (inward paths) and the inverse of the average distance to the given node. closeness distance is based on the incoming distance 
     #btcen - between centrality
 
     # Parallelize centrality calculations
-    if threading:
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            clcen_future = executor.submit(calculate_closeness_centrality, hbnet)
-            btcen_future = executor.submit(calculate_betweenness_centrality, hbnet)
+    if centrality_time_check:
+        local_start_time = time.time()
+        centrality_types = ["closeness", "betweeness", "eigen"]
 
-            clcen1 = clcen_future.result()
-            btcen1 = btcen_future.result()
-        ## Has it been parallelized (NO - Doesnt work well on CPU bound tasks)
+        local_start_time_closeness = time.time()
+        calculate_centrality(hbnet, "closeness")
+        closeness_centrality_time = time.time() - local_start_time_closeness
+
+        local_start_time_betweeness = time.time()
+        calculate_centrality(hbnet, "betweeness")
+        betweeness_centrality_time = time.time() - local_start_time_betweeness
+
+        local_start_time_eigen = time.time()
+        calculate_centrality(hbnet, "eigen")
+        eigen_centrality_time = time.time() - local_start_time_eigen
+        
+        local_start_time_multiprocessing = time.time()
+        with ProcessPoolExecutor() as executor:
+            results = list(executor.map(calculate_centrality, [hbnet]*3, centrality_types))
+        clcen1, btcen1, egcen1 = results
+        multiprocessing_time = time.time() - local_start_time_multiprocessing
+
+        local_start_time_threading = time.time()
+        with ThreadPoolExecutor() as executor:
+            results = list(executor.map(calculate_centrality, [hbnet]*3, centrality_types))
+        clcen1, btcen1, egcen1 = results
+        threading_time = time.time() - local_start_time_threading
+        
+        file10.write(f'{closeness_centrality_time}, {betweeness_centrality_time}, {eigen_centrality_time}, {multiprocessing_time}, {threading_time} \n')
+        hbnet.clear_edges()
+        continue
+    
+    if subgraph_threading:
+        clcen1 = calculate_centrality_for_subgraphs(hbnet, "closeness")
+        btcen1 = calculate_centrality_for_subgraphs(hbnet, "betweeness")
+        egcen1 = calculate_centrality_for_subgraphs(hbnet, "eigen")
+        
     elif multiprocessing:
         with ProcessPoolExecutor() as executor:
-            clcen_future = executor.submit(calculate_closeness_centrality, hbnet)
-            btcen_future = executor.submit(calculate_betweenness_centrality, hbnet)
-
-            clcen1 = clcen_future.result()
-            btcen1 = btcen_future.result()
+            results = list(executor.map(calculate_centrality, [hbnet]*3, centrality_types))
+        clcen1, btcen1, egcen1 = results
+    
+    elif threading:
+        with ThreadPoolExecutor() as executor:
+            results = list(executor.map(calculate_centrality, [hbnet]*3, centrality_types))
+        clcen1, btcen1, egcen1 = results
+        
     else:
-        clcen1 = calculate_closeness_centrality(hbnet)
-        btcen1 = calculate_betweenness_centrality(hbnet)
-    # Avoiding redundant storage and repeated calculations
+        clcen1 = calculate_centrality(hbnet, "closeness")
+        btcen1 = calculate_centrality(hbnet, "betweeness")
+        egcen1 = calculate_centrality(hbnet, "eigen")
+        
+    centrality_analysis_time = time.time() - local_start_time
+    
+    #
     hnodes = hbnet.nodes()
     nrcount1 = 0
-
     for i, nd in enumerate(hnodes):
         in_degree_nd = hbnet.in_degree(nd)  # Store in_degree result
         if in_degree_nd == 0:
@@ -461,42 +557,65 @@ for frame in range(0,num_iter):
 	#	nx.draw(hbnet,nx.circular_layout(hbnet),nodecolor='r', edge_color='b')
 	#	plt.show()
 	#
-    print("after centrality histogram for networks")
-    print("--- %s seconds ---" % (time.time() - start_time))                              
+    if cmd_print:
+        print("after centrality histogram for networks")
+        print("--- %s seconds ---" % (time.time() - start_time))                              
     #print count,len(nodes),minwt,maxwt,x
 
-    if community_analysis:
+    
+    # ## Eigen Value Analysis
+    # # Add eigenvector centrality as node attribute
+    # nx.set_node_attributes(hbnet, egcen1, 'eigenvector_centrality')
 
-        # Community Detection
-        communities = nx.algorithms.community.greedy_modularity_communities(hbnet, cutoff=1)
+    # # Visualize the graph with node colors based on eigenvector centrality
+    # node_colors = [egcen1[node] for node in hbnet.nodes()]
+    # pos = nx.spring_layout(hbnet)
+    
+    # nx.draw(hbnet, pos, node_color=node_colors, cmap=colormaps["plasma"], with_labels=True, font_size=4, node_size = 200)
+    # plt.title("Graph with Eigenvector Centrality")
+    # plt.savefig(f"{head}_network_plot_frame_eigen_{frame}.png")
 
-        # Create a mapping of node to community index
-        community_mapping = {node: i for i, community in enumerate(communities) for node in community}
 
-        # Add community information to nodes
-        nx.set_node_attributes(hbnet, community_mapping, "community")
+    # ## Community Analysis
+    # local_start_time = time.time()
+    # communities = nx.algorithms.community.greedy_modularity_communities(hbnet, cutoff=1)
+    # community_analysis_time = time.time() - local_start_time
+    # # Create a mapping of node to community index
+    # community_mapping = {node: i for i, community in enumerate(communities) for node in community}
 
-        # Filter nodes based on degree centrality (optional)
-        # degree_threshold = 10
-        # filtered_nodes = [node for node, degree in hbnet.degree() if degree >= degree_threshold]
-        # filtered_hbnet = hbnet.subgraph(filtered_nodes)
+    # ## Plotting based details
+    
+    # nx.set_node_attributes(hbnet, community_mapping, "community")
 
-        filtered_hbnet = hbnet
-        # Draw the graph with nodes colored by community
-        plt.figure(figsize=(10, 8))
-        pos = nx.spring_layout(filtered_hbnet)  # You can use a different layout algorithm if needed
-        node_colors = [filtered_hbnet.nodes[node]["community"] for node in filtered_hbnet]
-        nx.draw(filtered_hbnet, pos, node_color=node_colors, cmap=plt.cm.get_cmap("viridis"), with_labels=True, font_size=8)
+    # # Filter nodes based on degree centrality (optional)
+    # average_degree = 0
+    # max_degree = 0
+    # for node, degree in hbnet.degree():
+    #     average_degree += degree
+    #     max_degree = max(degree, max_degree)
+    # average_degree /= hbnet.number_of_nodes()
+    # degree_threshold = min(average_degree * 1.1, max_degree*0.8)
+    # print(f'Average Degree = {average_degree}, Max Degree = {max_degree}')
+    # filtered_nodes = [node for node, degree in hbnet.degree() if degree >= degree_threshold]
+    # filtered_hbnet = hbnet.subgraph(filtered_nodes)
+    # # filtered_hbnet = hbnet
+    
+    # plt.figure(figsize=(10, 8))
+    # pos = nx.spring_layout(filtered_hbnet)  # You can use a different layout algorithm if needed
+    # node_colors = [filtered_hbnet.nodes[node]["community"] for node in filtered_hbnet]
+    # nx.draw(filtered_hbnet, pos, node_color=node_colors, cmap=colormaps["viridis"], with_labels=True, font_size=4, node_size = 200)
 
-        # Save the plot as an image file (adjust the filename and format as needed)
+    # plt.savefig(f"{head}_network_plot_frame_comm1_{frame}.png")
         
-        plt.savefig(f"{head}_network_plot_frame{frame}.png")
-        # plt.show()
-        # Clearing networks
-        print("after motif and community analysis for networks")
-        print("--- %s seconds ---" % (time.time() - start_time))
-
-    hbnet.clear()
+    # # Print the detected communities
+    # for i, community in enumerate(communities):
+    #     file9.write(f"Community {i + 1}: {list(community)}")
+    
+    # if cmd_print:
+    #     print("after community analysis for networks")
+    #     print("--- %s seconds ---" % (time.time() - start_time))
+    # file10.write(f'{graph_creation_time}, {shortest_path_time}, {centrality_analysis_time}, {community_analysis_time}\n')
+    hbnet.clear_edges()
 
 #frame loop
 #Normalization could use 0,1,2,6,7,8 - #water nodes * nframes; 3,4,5 - #sugar nodes*nframes
@@ -511,7 +630,7 @@ for key in average_hbond_life_mapping.keys():
     sum_ = sum(average_hbond_life_mapping[key]['Time_List'])
     average = sum_ / len_
     
-    file9.write(f'{key}, {average}\n')
+    file8.write(f'{key}, {average}\n')
     
 for i in range (0,nhb):
 	file2.write("%d\t\t%d\t\t%d\t\t%d\n"%(i,nhb_hist[i][0],nhb_hist[i][1],nhb_hist[i][2]))
@@ -537,10 +656,9 @@ for i in range (0,mcen):
 file1.close()
 file2.close()
 file3.close()
-#file4.close()
 file5.close()
 file6.close()
 file7.close()
-if test: 
-    file8.close()
+file8.close()
 file9.close()
+file10.close()

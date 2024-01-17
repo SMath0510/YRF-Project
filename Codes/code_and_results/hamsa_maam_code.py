@@ -27,6 +27,7 @@ file5name= head + 'Pathlength_histogram_'+extnname
 file6name= head + 'PerFrame_HistCount_'+extnname
 file7name= head + 'Centrality_histogram_'+extnname
 file10name = head + f'Time_Analysis.csv'
+file11name = head + f'Edges.txt'
 traj = md.load(xtcname,top=groname)   
 info = traj.xyz.shape
 
@@ -140,6 +141,8 @@ file7.write("#Frame \t WatClCen \t WatBtCen\n")
 
 file10 = open(file10name, "w")
 file10.write(f"Graph Construction, Shortest Path, Centrality, Community\n")
+
+file11 = open(file11name, "w")
 hbnet = nx.MultiDiGraph()
 watnet = nx.MultiDiGraph() 
 wmin = 0.4 # 0.14/0.35 as 3.5 A is the h-bond cut-off distance
@@ -161,7 +164,7 @@ btbin_width = 0.005
 clbin_width = 0.01
 #
 print("No. of frames: %d"%(n_frame))
-for frame in range(0,min(5, n_frame)):
+for frame in range(0, 1):
     
 	local_start_time = time.time()
 	print("Working on frame " + str(frame))
@@ -189,6 +192,7 @@ for frame in range(0,min(5, n_frame)):
 						#angwt = (cosang - cosmin)/cosnorm
 						wt = 1.0
 						hbnet.add_edge(rid1,rid2,weight=wt)
+						file11.write(f'{index1}\t{index2}\n')
 					angle_h2 = angle(frame,index1+2,index1,index2)
 					if angle_h2 <= 30:
 						count = count + 1
@@ -198,6 +202,8 @@ for frame in range(0,min(5, n_frame)):
 						#angwt = (cosang - cosmin)/cosnorm
 						wt = 1.0 
 						hbnet.add_edge(rid1,rid2,weight=wt)
+						file11.write(f'{index1}\t{index2}\n')
+	
 					#Angle loops
 				#heavy atom distance loop
 		#end of acceptor loop
@@ -301,12 +307,12 @@ for frame in range(0,min(5, n_frame)):
 	#	nx.draw(hbnet,nx.circular_layout(hbnet),nodecolor='r', edge_color='b')
 	#	plt.show()
  
-	local_start_time = time.time()
-	communities = nx.algorithms.community.greedy_modularity_communities(hbnet, cutoff=1)
-	community_analysis_time = time.time() - local_start_time
+	# local_start_time = time.time()
+	# communities = nx.algorithms.community.greedy_modularity_communities(hbnet, cutoff=1)
+	# community_analysis_time = time.time() - local_start_time
  
 	#Clearing networks
-	file10.write(f'{graph_creation_time}, {shortest_path_time}, {centrality_analysis_time}, {community_analysis_time}\n')
+	file10.write(f'{graph_creation_time}, {shortest_path_time}, {centrality_analysis_time}\n')
 	hbnet.clear()
 	file6.write("%d\t\t%d\t\t%d\t\t%d\t\t%d\t\t%d\t\t%d\t\t%d\n"%(frame,waccsum,wdonsum,whbsum,pcount,mecount,mecount2,nrcount1))
 	#

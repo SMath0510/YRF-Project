@@ -39,7 +39,8 @@ nres =  topol.n_residues
 
 traj_file = XTCTrajectoryFile(xtcname)
 xyz,tot_time,step,box = traj_file.read()
-
+print(traj_file)
+exit(0)
 box_len =[]
 for i in range(0,n_frame):
 	box_len.append(box[i][0][0])

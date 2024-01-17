@@ -329,7 +329,7 @@ for i in range (0,nres) :
         pass
 
 ## For testing purposes    
-num_iter = min(5, n_frame)
+num_iter = n_frame
 
 for frame in range(0,num_iter):
     local_start_time = time.time()
@@ -523,57 +523,57 @@ for frame in range(0,num_iter):
     #print count,len(nodes),minwt,maxwt,x
 
     
-    ## Eigen Value Analysis
-    # Add eigenvector centrality as node attribute
-    nx.set_node_attributes(hbnet, egcen1, 'eigenvector_centrality')
+    # ## Eigen Value Analysis
+    # # Add eigenvector centrality as node attribute
+    # nx.set_node_attributes(hbnet, egcen1, 'eigenvector_centrality')
 
-    # Visualize the graph with node colors based on eigenvector centrality
-    node_colors = [egcen1[node] for node in hbnet.nodes()]
-    pos = nx.spring_layout(hbnet)
+    # # Visualize the graph with node colors based on eigenvector centrality
+    # node_colors = [egcen1[node] for node in hbnet.nodes()]
+    # pos = nx.spring_layout(hbnet)
     
-    nx.draw(hbnet, pos, node_color=node_colors, cmap=colormaps["plasma"], with_labels=True, font_size=4, node_size = 200)
-    plt.title("Graph with Eigenvector Centrality")
-    plt.savefig(f"{head}_network_plot_frame_eigen_{frame}.png")
+    # nx.draw(hbnet, pos, node_color=node_colors, cmap=colormaps["plasma"], with_labels=True, font_size=4, node_size = 200)
+    # plt.title("Graph with Eigenvector Centrality")
+    # plt.savefig(f"{head}_network_plot_frame_eigen_{frame}.png")
 
 
-    ## Community Analysis
-    local_start_time = time.time()
-    communities = nx.algorithms.community.greedy_modularity_communities(hbnet, cutoff=1)
-    community_analysis_time = time.time() - local_start_time
-    # Create a mapping of node to community index
-    community_mapping = {node: i for i, community in enumerate(communities) for node in community}
+    # ## Community Analysis
+    # local_start_time = time.time()
+    # communities = nx.algorithms.community.greedy_modularity_communities(hbnet, cutoff=1)
+    # community_analysis_time = time.time() - local_start_time
+    # # Create a mapping of node to community index
+    # community_mapping = {node: i for i, community in enumerate(communities) for node in community}
 
-    ## Plotting based details
+    # ## Plotting based details
     
-    nx.set_node_attributes(hbnet, community_mapping, "community")
+    # nx.set_node_attributes(hbnet, community_mapping, "community")
 
-    # Filter nodes based on degree centrality (optional)
-    average_degree = 0
-    max_degree = 0
-    for node, degree in hbnet.degree():
-        average_degree += degree
-        max_degree = max(degree, max_degree)
-    average_degree /= hbnet.number_of_nodes()
-    degree_threshold = min(average_degree * 1.1, max_degree*0.8)
-    print(f'Average Degree = {average_degree}, Max Degree = {max_degree}')
-    filtered_nodes = [node for node, degree in hbnet.degree() if degree >= degree_threshold]
-    filtered_hbnet = hbnet.subgraph(filtered_nodes)
-    # filtered_hbnet = hbnet
+    # # Filter nodes based on degree centrality (optional)
+    # average_degree = 0
+    # max_degree = 0
+    # for node, degree in hbnet.degree():
+    #     average_degree += degree
+    #     max_degree = max(degree, max_degree)
+    # average_degree /= hbnet.number_of_nodes()
+    # degree_threshold = min(average_degree * 1.1, max_degree*0.8)
+    # print(f'Average Degree = {average_degree}, Max Degree = {max_degree}')
+    # filtered_nodes = [node for node, degree in hbnet.degree() if degree >= degree_threshold]
+    # filtered_hbnet = hbnet.subgraph(filtered_nodes)
+    # # filtered_hbnet = hbnet
     
-    plt.figure(figsize=(10, 8))
-    pos = nx.spring_layout(filtered_hbnet)  # You can use a different layout algorithm if needed
-    node_colors = [filtered_hbnet.nodes[node]["community"] for node in filtered_hbnet]
-    nx.draw(filtered_hbnet, pos, node_color=node_colors, cmap=colormaps["viridis"], with_labels=True, font_size=4, node_size = 200)
+    # plt.figure(figsize=(10, 8))
+    # pos = nx.spring_layout(filtered_hbnet)  # You can use a different layout algorithm if needed
+    # node_colors = [filtered_hbnet.nodes[node]["community"] for node in filtered_hbnet]
+    # nx.draw(filtered_hbnet, pos, node_color=node_colors, cmap=colormaps["viridis"], with_labels=True, font_size=4, node_size = 200)
 
-    plt.savefig(f"{head}_network_plot_frame_comm1_{frame}.png")
+    # plt.savefig(f"{head}_network_plot_frame_comm1_{frame}.png")
         
-    # Print the detected communities
-    for i, community in enumerate(communities):
-        file9.write(f"Community {i + 1}: {list(community)}")
+    # # Print the detected communities
+    # for i, community in enumerate(communities):
+    #     file9.write(f"Community {i + 1}: {list(community)}")
     
-    if cmd_print:
-        print("after community analysis for networks")
-        print("--- %s seconds ---" % (time.time() - start_time))
+    # if cmd_print:
+    #     print("after community analysis for networks")
+    #     print("--- %s seconds ---" % (time.time() - start_time))
     file10.write(f'{graph_creation_time}, {shortest_path_time}, {centrality_analysis_time}, {community_analysis_time}\n')
     hbnet.clear_edges()
 
